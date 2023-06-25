@@ -1,0 +1,48 @@
+
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+autonumber
+participant SpringApplication as SpringApplication
+participant ConfigurableEnvironment as Environment
+participant ConversionService as ConversionService
+participant AnnotationConfigServletWebServerApplicationContext as Context
+participant SimpleApplicationEventMulticaster as initialMulticaster
+
+note right of SpringApplication
+run方法
+end note
+SpringApplication -> SpringApplication: 启动计时器stopWatch
+SpringApplication -> SpringApplication: 设置系统属性"java.awt.headless"
+SpringApplication -> SpringApplication: 注册SpringApplicationRunListener（SpringApplication中）监听
+SpringApplication -> initialMulticaster: 发布ApplicationStartingEvent事件(SpringApplicationRunListener监听) -->starting
+SpringApplication -> SpringApplication: 封装命令行参数ApplicationArguments对象
+alt 准备环境对象
+SpringApplication -> Environment: 创建StandardServletEnvironment对象(根据webApplicationType对象判断)
+alt 配置环境对象
+Environment -> ConversionService: 创建并设置conversionService转换服务
+ConversionService -> ConversionService: 1添加默认Converter，2添加默认Formatter
+SpringApplication -> Environment: 配置环境对象的propertySources
+SpringApplication -> Environment: 配置环境对象的Profiles（属性：spring.profiles.active）
+end
+SpringApplication -> Environment: 为MutablePropertySources更新ConfigurationPropertySourcesPropertySource对象
+SpringApplication -> initialMulticaster: 发布ApplicationEnvironmentPreparedEvent事件（SpringApplicationRunListener类型对象监听）-->prepared
+SpringApplication -> Environment: 将Environment对象绑定到SpringApplication
+SpringApplication -> SpringApplication: 如果是自定义环境对象，判断如果需要转换则转换
+SpringApplication -> Environment: 为MutablePropertySources更新ConfigurationPropertySourcesPropertySource对象
+end
+SpringApplication -> Environment: 设置spring.beaninfo.ignore属性，保证某些Bean不会添加到准备的环境中
+SpringApplication -> SpringApplication: 打印Banner
+SpringApplication -> Context: 创建上下文对象context
+alt 准备上下文的基本环境对象
+end
+SpringApplication -> Context: 刷新上下文（走Spring逻辑）
+SpringApplication -> SpringApplication: afterRefresh扩展点
+SpringApplication -> SpringApplication: 停止计时器stopWatch
+SpringApplication -> SpringApplication: 打印Spring启动耗时信息
+SpringApplication -> initialMulticaster: 发布ApplicationStartedEvent事件（SpringApplicationRunListener监听）-->Started
+SpringApplication -> SpringApplication: 执行Runner集合对象（ApplicationRunner、CommandLineRunner），callRunners
+SpringApplication -> initialMulticaster: 发布ApplicationReadyEvent事件（SpringApplicationRunListener监听）-->running
+@enduml

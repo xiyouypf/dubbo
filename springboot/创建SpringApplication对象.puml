@@ -1,0 +1,16 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+participant SpringApplication as SpringApplication
+note right of SpringApplication
+SpringApplication构造方法
+end note
+SpringApplication -> SpringApplication: 设置 resourceLoader
+SpringApplication -> SpringApplication: 设置 primarySources
+SpringApplication -> SpringApplication: 判断当前web应用类型，设置 webApplicationType，默认（SERVLET）
+SpringApplication -> SpringApplication: 找到应用程序运行的主类，设置 mainApplicationClass
+SpringApplication -> SpringApplication: 加载创建 ApplicationContextInitializer 类型初始化器，并添加到 initializers 集合中
+SpringApplication -> SpringApplication: 加载创建 ApplicationListener 类型监听器，并添加到 listeners 集合中
+
+@enduml

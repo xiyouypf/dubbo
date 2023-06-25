@@ -12,11 +12,11 @@
     <artifactId>provider</artifactId>
 
     <dependencies>
-        <dependency>
-            <artifactId>mapper</artifactId>
-            <groupId>com.ypf</groupId>
-            <version>1.0.0</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <artifactId>mapper</artifactId>-->
+<!--            <groupId>com.ypf</groupId>-->
+<!--            <version>1.0.0</version>-->
+<!--        </dependency>-->
         <dependency>
             <artifactId>api</artifactId>
             <groupId>com.ypf</groupId>

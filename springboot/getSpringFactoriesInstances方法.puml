@@ -1,0 +1,14 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+participant SpringApplication as SpringApplication
+participant SpringFactoriesLoader as SpringFactoriesLoader
+note right of SpringApplication
+getSpringFactoriesInstances方法
+end note
+SpringApplication -> SpringFactoriesLoader: 获取"类型"对应的"全路径类名"集合
+SpringFactoriesLoader -> SpringFactoriesLoader: 加载"META-INF/spring.factories"文件资源，结果类型Map<String, List<String>>放入缓存cache(key为类加载器)中
+SpringFactoriesLoader -> SpringFactoriesLoader: 根据"类型"获取"全路径类名"集合
+SpringApplication -> SpringApplication: 创建"全路径类名"集合对象，返回这些对象的集合
+@enduml
