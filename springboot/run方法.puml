@@ -4,12 +4,12 @@
 
 autonumber
 
-autonumber
 participant SpringApplication as SpringApplication
 participant ConfigurableEnvironment as Environment
 participant ConversionService as ConversionService
-participant AnnotationConfigServletWebServerApplicationContext as Context
+participant AnnotationConfigApplicationContext as Context
 participant SimpleApplicationEventMulticaster as initialMulticaster
+participant DefaultListableBeanFactory as BeanFactory
 
 note right of SpringApplication
 run方法
@@ -19,6 +19,7 @@ SpringApplication -> SpringApplication: 设置系统属性"java.awt.headless"
 SpringApplication -> SpringApplication: 注册SpringApplicationRunListener（SpringApplication中）监听
 SpringApplication -> initialMulticaster: 发布ApplicationStartingEvent事件(SpringApplicationRunListener监听) -->starting
 SpringApplication -> SpringApplication: 封装命令行参数ApplicationArguments对象
+
 alt 准备环境对象
 SpringApplication -> Environment: 创建StandardServletEnvironment对象(根据webApplicationType对象判断)
 alt 配置环境对象
@@ -36,7 +37,18 @@ end
 SpringApplication -> Environment: 设置spring.beaninfo.ignore属性，保证某些Bean不会添加到准备的环境中
 SpringApplication -> SpringApplication: 打印Banner
 SpringApplication -> Context: 创建上下文对象context
-alt 准备上下文的基本环境对象
+alt 准备上下文Context对象
+Context -> Context: 设置环境对象
+alt 后置处理ApplicationContext
+    SpringApplication -> BeanFactory: 注册beanNameGenerator到一级缓存中
+    SpringApplication -> Context: 设置资源加载器
+    SpringApplication -> Context: 设置类加载器
+    SpringApplication -> BeanFactory: 设置转换服务
+end
+SpringApplication -> SpringApplication: 执行所有初始化器进行初始化
+SpringApplication -> initialMulticaster: 发布ApplicationContextInitializedEvent事件（SpringApplicationRunListener类型对象监听）-->contextPrepared
+SpringApplication -> SpringApplication: Bean定义信息加载器加载Bean定义信息
+SpringApplication -> initialMulticaster: 发布ApplicationPreparedEvent事件（SpringApplicationRunListener类型对象监听）-->contextLoaded
 end
 SpringApplication -> Context: 刷新上下文（走Spring逻辑）
 SpringApplication -> SpringApplication: afterRefresh扩展点
